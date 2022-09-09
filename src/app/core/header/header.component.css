@@ -1,0 +1,9 @@
+.nav-wrapper{
+  padding: 0px 10px;
+}
+.brand-logo{
+  font-size: 20px;
+}
+.icon-menu{
+  cursor: pointer;
+}

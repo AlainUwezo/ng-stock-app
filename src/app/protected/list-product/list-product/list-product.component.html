@@ -1,0 +1,123 @@
+<div class="row">
+  <div style="padding: 0%!important">
+    <app-navbar [nav_width_px]="nav_width"></app-navbar>
+  </div>
+  <div class="col right" [ngStyle]="{'width': 'calc(100% - ' + nav_width +'px)'}">
+    <div class="row #3f51b5 indigo white-text"
+         style="padding: 0px 20px; font-weight: lighter; font-size: 18px;">
+         <div class="col s12 m6 valign-wrapper" style="height: 100%; padding: 20px 0px;">
+            Liste des produits
+          </div>
+         <div class="col right">
+           <input class="white-text" (keyup)="applyFilter($event)" placeholder="rechercher" #input>
+         </div>
+    </div>
+
+    <div class="row #ffe0b2 orange lighten-4"
+         style="padding: 10px 20px; font-weight: lighter; font-size: 18px; margin: 5px 0px;">
+      <button class="btn white black-text">Ajouter</button>
+      <div class="right">
+        &nbsp;<button class="green white-text" mat-button (click)="exporter.exportTable('xlsx', {fileName:'liste_produits_excel'})">Excel</button>
+        &nbsp;<button class="green white-text" mat-button (click)="exporter.exportTable('csv', {fileName:'liste_produits_csv'})">CSV</button>
+        &nbsp;&nbsp;
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table mat-table
+        [dataSource]="dataSource"
+        multiTemplateDataRows
+        matSort matSortActive="createdAt" matSortDisableClear matSortDirection="desc"
+        matTableExporter #exporter="matTableExporter"
+        class="mat-elevation-z2">
+
+        <ng-container matColumnDef="{{column}}" *ngFor="let column of columnsKeys;">
+          <th mat-header-cell *matHeaderCellDef disableClear>
+            <span  mat-sort-header *ngIf="column !== 'sell' && column !== 'delete' && column !== 'modify'">
+              {{column | nameHeaderRow}}&nbsp;&nbsp;&nbsp;
+              <i class="material-icons" (click)="onFilterList()">filter_list</i>
+            </span>
+          </th>
+          <span *ngIf="column == 'id'">
+            <td mat-cell [ngClass]="{'expired_td' : element.expiredAt <= today_date}" *matCellDef="let element">{{element[column]}}</td>
+          </span>
+          <span *ngIf="column == 'sell'">
+            <td mat-cell *matCellDef="let element">
+              <button mat-button class="#ffe0b2 orange lighten-3">Vendre</button>
+            </td>
+          </span>
+          <span *ngIf="column == 'modify'">
+            <td mat-cell *matCellDef="let element">
+              <button class="blue-text white" style="text-decoration: underline;" mat-button>Modifier</button>
+            </td>
+          </span>
+          <span *ngIf="column == 'delete'">
+            <td mat-cell *matCellDef="let element">
+              <i class="btn-delete material-icons red-text hoverable circle">delete</i>
+            </td>
+          </span>
+          <span *ngIf="column == 'type'">
+            <td mat-cell  *matCellDef="let element">{{element[column].name}}</td>
+          </span>
+
+          <span *ngIf="column == 'expiredAt'">
+            <td mat-cell  *matCellDef="let element">{{element[column] | date: 'dd/MM/yyyy'}}</td>
+          </span>
+
+          <td mat-cell  *matCellDef="let element">{{element[column]}}</td>
+        </ng-container>
+        <ng-container matColumnDef="expand">
+          <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
+          <td mat-cell *matCellDef="let element">
+            <span mat-icon-button aria-label="expand row" (click)="(expandedElement = expandedElement === element ? null : element); $event.stopPropagation()">
+              <mat-icon *ngIf="expandedElement !== element">keyboard_arrow_down</mat-icon>
+              <mat-icon *ngIf="expandedElement === element">keyboard_arrow_up</mat-icon>
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+        <ng-container matColumnDef="expandedDetail">
+          <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplayWithExpand.length">
+            <div class="element-detail"
+                [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+
+              <div class="element-diagram">
+                <div>{{element.type.name}} </div>
+                <div class="element-name">{{element.name}}</div>
+                <div> {{element.price}} </div>
+              </div>
+              <div class="element-description">
+                <div [ngClass]="{'red-text' : element.expiredAt <= today_date, 'green-text' : element.expiredAt > today_date}">
+                  Date d'expiration : {{element.expiredAt | date:'dd/MM/yyyy'}}
+                </div>
+                <div class="element-description">
+                  <div>Quantité en stock : {{element.quantity}}</div>
+                  {{element.description}}
+                </div>
+                <span class="element-description-attribution"> -- Ajouté le {{element.createdAt | date: 'dd/MM/yyyy'}} </span>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnsToDisplayWithExpand"></tr>
+        <tr mat-row *matRowDef="let element; columns: columnsToDisplayWithExpand;"
+            class="example-element-row"
+            [class.example-expanded-row]="expandedElement === element"
+            (click)="expandedElement = expandedElement === element ? null : element">
+        </tr>
+        <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+
+      </table>
+    </div>
+
+    <mat-paginator [length]="100"
+              [pageSize]="10"
+              [pageSizeOptions]="[5, 10, 25, 100]"
+              aria-label="Selectionner page"
+              showFirstLastButtons="true">
+    </mat-paginator>
+
+  </div>
+</div>

@@ -1,0 +1,30 @@
+<header>
+  <div class="navbar-fixed">
+    <nav class="#3f51b5 indigo">
+      <div class="nav-wrapper">
+        <a href="#" class="brand-logo left">
+          <i class="material-icons">cloud</i>
+          Logo
+        </a>
+        <span class="icon-menu right hide-on-med-and-up" [matMenuTriggerFor]="menu">
+          <i class="material-icons">menu</i>
+        </span>
+        <ul class="right hide-on-small-only">
+          <li><a routerLink="/dashboard/list-product">Se connecter</a></li>
+          <li><a href="#">Aide</a></li>
+        </ul>
+
+        <mat-menu #menu="matMenu" class="customize">
+          <button mat-menu-item>
+            <mat-icon>add</mat-icon>
+            <span routerLink="/dashboard/list-product">Se connecter</span>
+          </button>
+          <button mat-menu-item>
+            <mat-icon>help</mat-icon>
+            <span href="#">Aide</span>
+          </button>
+        </mat-menu>
+      </div>
+    </nav>
+  </div>
+</header>
